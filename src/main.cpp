@@ -1,7 +1,7 @@
 #include <cadmium/core/logger/csv.hpp>
 #include <cadmium/core/simulation/root_coordinator.hpp>
 #include <limits>
-#include "lbs.hpp"
+#include "model/lbs.hpp"
 
 using namespace cadmium::loadbalancer;
 using namespace std;

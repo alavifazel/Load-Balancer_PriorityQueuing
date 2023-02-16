@@ -6,13 +6,24 @@
 #include <optional>
 #include <array>
 #include <queue>
+#include <utility>
 #include "job.hpp"
 
 namespace cadmium::loadbalancer {
+	typedef std::pair<int,Job> jobpair_t;
+	class jobPairCompare {
+	public:
+		bool operator()(const jobpair_t& lhs, const jobpair_t& rhs)
+		{
+			return rhs.first < lhs.first;
+		}
+
+	};
+
 	struct LoadBalancerState {
 		double clock;
 		double sigma;
-		std::queue<Job> jobQueue;
+		std::priority_queue<jobpair_t, std::vector<jobpair_t>, jobPairCompare> jobQueue;
 		LoadBalancerState(): clock(), sigma(std::numeric_limits<double>::infinity()), jobQueue() {}
 	};
 
@@ -51,7 +62,9 @@ namespace cadmium::loadbalancer {
 		void externalTransition(LoadBalancerState& s, double e) const override {
 			s.clock += e;
 			auto newJob = inJob->getBag().back();
-			s.jobQueue.push(Job(newJob->id, newJob->timeGenerated));
+			auto priority = inPriority->getBag().back();
+			s.jobQueue.push(std::make_pair(*priority, Job(newJob->id, newJob->timeGenerated)));
+				
 			if  (s.jobQueue.size() == 1) {
 				s.sigma = dispatchTime;
 			}
@@ -59,7 +72,7 @@ namespace cadmium::loadbalancer {
 
 		void output(const LoadBalancerState& s) const override {
 			if(s.jobQueue.size() > 0) {
-				Job job = s.jobQueue.front();
+				Job job = s.jobQueue.top().second;
 				if (job.id % 3 == 0) {
 					outJob[0]->addMessage(job);
 				} else if (job.id % 3 == 1) {

@@ -23,6 +23,12 @@ namespace cadmium::loadbalancer {
 	class Generator : public Atomic<GeneratorState> {
 	 private:
 		double jobPeriod;
+		size_t randInt(size_t a, size_t b) const {
+			static std::random_device dev;
+			static std::mt19937 rng(dev());
+			static std::uniform_int_distribution<std::mt19937::result_type> dist6(a,b);
+			return dist6(rng);
+		}
 	 public:
 		Port<bool> inStop;
 		BigPort<Job> outGenerated;
@@ -44,7 +50,6 @@ namespace cadmium::loadbalancer {
 
 		void externalTransition(GeneratorState& s, double e) const override {
 			s.clock += e;
-			// s.sigma = std::max(s.sigma - e, 0.);
 			if (!inStop->empty() && inStop->getBag().back()) {
 				s.sigma = std::numeric_limits<double>::infinity();
 			}
@@ -52,7 +57,7 @@ namespace cadmium::loadbalancer {
 
 		void output(const GeneratorState& s) const override {
 			outGenerated->addMessage(Job(s.jobCount, s.clock + s.sigma));
-			outPriority->addMessage(3);
+			outPriority->addMessage(randInt(1,5));
 		}
 
 		[[nodiscard]] double timeAdvance(const GeneratorState& s) const override {

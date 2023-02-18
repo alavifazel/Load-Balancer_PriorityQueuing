@@ -12,7 +12,7 @@ namespace cadmium::loadbalancer {
 		double sigma;
 		long long jobCount;
 
-		GeneratorState(): clock(), sigma(), jobCount() {}
+		GeneratorState(): sigma(), jobCount() {}
 	};
 
 	std::ostream& operator<<(std::ostream& out, const GeneratorState& s) {
@@ -43,7 +43,6 @@ namespace cadmium::loadbalancer {
 		}
 
 		void internalTransition(GeneratorState& s) const override {
-			s.clock += s.sigma;
 			s.sigma = jobPeriod;
 			s.jobCount += 1;
 		}

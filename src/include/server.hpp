@@ -6,13 +6,14 @@
 #include <queue>
 #include <random>
 #include "job.hpp"
+#include "phase.hpp"
 
 namespace cadmium::loadbalancer {
 	struct ServerState {
-		double clock;
 		double sigma; 
+		Phase phase;
 		std::queue<Job> jobQueue;
-		ServerState(): clock(), sigma(std::numeric_limits<double>::infinity()), jobQueue() {}
+		ServerState(): sigma(std::numeric_limits<double>::infinity()), jobQueue(), phase(Passive) {}
 	};
 
 	std::ostream& operator<<(std::ostream &out, const ServerState& s) {
@@ -42,27 +43,40 @@ namespace cadmium::loadbalancer {
 		}
 
 		void internalTransition(ServerState& s) const override {
-			s.clock += s.sigma;
-			// Start processing jobs if queue of jobs is not empty
-			if(s.jobQueue.size() > 0) {
-				s.sigma = generateProcessingTime();
-				s.jobQueue.pop();
-			} else {
-				s.sigma = std::numeric_limits<double>::infinity();
+
+			switch(s.phase) {
+				case Active:
+				{
+					// Start processing jobs if queue of jobs is not empty
+					if(s.jobQueue.size() > 0) {
+						s.sigma = generateProcessingTime();
+						s.jobQueue.pop();
+
+					} else {
+						s.phase = Passive;
+						s.sigma = std::numeric_limits<double>::infinity();
+					}
+					break;
+				}
+
 			}
 		}
 
 		void externalTransition(ServerState& s, double e) const override {
-			s.clock += e;
-			s.sigma -= e;
-			if (!inGenerated->empty()) {
-				auto newJob = inGenerated->getBag().back();
-				s.jobQueue.push(Job(newJob->id, newJob->timeGenerated));
-
-				// Start processing if it is the only job in the queue
-				if  (s.jobQueue.size() == 1) {
+			auto newJob = inGenerated->getBag().back();
+			s.jobQueue.push(Job(newJob->id, newJob->timeGenerated));
+			switch(s.phase) {
+				case Active:
+				{
+					s.sigma -= e;
+					break;
+				}
+				case Passive:
+				{
 					s.sigma = generateProcessingTime();
-				} 
+					s.phase = Active;
+					break;
+				}
 			}
 		}
 

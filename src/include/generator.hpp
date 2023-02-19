@@ -5,14 +5,16 @@
 #include <iostream>
 #include <random>
 #include "job.hpp"
+#include "phase.hpp"
 
 namespace cadmium::loadbalancer {
 	struct GeneratorState {
-		double clock;
 		double sigma;
+		Phase phase;
+		double clock;
 		long long jobCount;
 
-		GeneratorState(): sigma(), jobCount() {}
+		GeneratorState(): phase(Active), clock(), sigma(), jobCount() {}
 	};
 
 	std::ostream& operator<<(std::ostream& out, const GeneratorState& s) {
@@ -43,14 +45,21 @@ namespace cadmium::loadbalancer {
 		}
 
 		void internalTransition(GeneratorState& s) const override {
-			s.sigma = jobPeriod;
-			s.jobCount += 1;
+			switch(s.phase) {
+				case Active:
+					s.sigma = jobPeriod;
+					s.jobCount += 1;
+					break;
+				case Passive:
+					break; // Never reaches
+			}
 		}
 
 		void externalTransition(GeneratorState& s, double e) const override {
 			s.clock += e;
 			if (!inStop->empty() && inStop->getBag().back()) {
 				s.sigma = std::numeric_limits<double>::infinity();
+				s.phase = Passive;
 			}
 		}
 

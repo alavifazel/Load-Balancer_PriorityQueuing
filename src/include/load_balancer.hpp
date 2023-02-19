@@ -8,6 +8,7 @@
 #include <queue>
 #include <utility>
 #include "job.hpp"
+#include "phase.hpp"
 
 namespace cadmium::loadbalancer {
 	typedef std::pair<int,Job> jobpair_t;
@@ -17,14 +18,13 @@ namespace cadmium::loadbalancer {
 		{
 			return rhs.first < lhs.first;
 		}
-
 	};
 
 	struct LoadBalancerState {
-		double clock;
 		double sigma;
+		Phase phase;
 		std::priority_queue<jobpair_t, std::vector<jobpair_t>, jobPairCompare> jobQueue;
-		LoadBalancerState(): clock(), sigma(std::numeric_limits<double>::infinity()), jobQueue() {}
+		LoadBalancerState(): sigma(std::numeric_limits<double>::infinity()), jobQueue(), phase(Passive) {}
 	};
 
 	std::ostream& operator<<(std::ostream &out, const LoadBalancerState& s) {
@@ -56,18 +56,29 @@ namespace cadmium::loadbalancer {
 				s.sigma = dispatchTime;
 			} else {
 				s.sigma = std::numeric_limits<double>::infinity();
+				s.phase = Passive;
 			}
 		}
 
 		void externalTransition(LoadBalancerState& s, double e) const override {
-			s.clock += e;
 			auto newJob = inJob->getBag().back();
 			auto priority = inPriority->getBag().back();
 			s.jobQueue.push(std::make_pair(*priority, Job(newJob->id, newJob->timeGenerated)));
-				
-			if  (s.jobQueue.size() == 1) {
-				s.sigma = dispatchTime;
+
+			switch(s.phase) {
+				case Active:
+				{
+					s.sigma -= e;
+					break;
+				}
+				case Passive:
+				{
+					s.sigma = dispatchTime;
+					s.phase = Active;
+					break;
+				}
 			}
+				
 		}
 
 		void output(const LoadBalancerState& s) const override {

@@ -43,22 +43,13 @@ namespace cadmium::loadbalancer {
 		}
 
 		void internalTransition(ServerState& s) const override {
-
-			switch(s.phase) {
-				case Active:
-				{
-					// Start processing jobs if queue of jobs is not empty
-					if(s.jobQueue.size() > 0) {
-						s.sigma = generateProcessingTime();
-						s.jobQueue.pop();
-
-					} else {
-						s.phase = Passive;
-						s.sigma = std::numeric_limits<double>::infinity();
-					}
-					break;
-				}
-
+				// Start processing jobs if queue of jobs is not empty
+				if(s.jobQueue.size() > 0) {
+				s.sigma = generateProcessingTime();
+				s.jobQueue.pop();
+			} else {
+				s.phase = Passive;
+				s.sigma = std::numeric_limits<double>::infinity();
 			}
 		}
 

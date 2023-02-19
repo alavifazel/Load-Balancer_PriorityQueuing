@@ -43,13 +43,12 @@ namespace cadmium::loadbalancer {
 		}
 
 		void internalTransition(ServerState& s) const override {
-				// Start processing jobs if queue of jobs is not empty
-				if(s.jobQueue.size() > 0) {
-				s.sigma = generateProcessingTime();
-				s.jobQueue.pop();
-			} else {
+			s.jobQueue.pop();
+			if (s.jobQueue.size() == 0) {
 				s.phase = Passive;
 				s.sigma = std::numeric_limits<double>::infinity();
+			} else {
+				s.sigma = generateProcessingTime();
 			}
 		}
 
@@ -72,8 +71,7 @@ namespace cadmium::loadbalancer {
 		}
 
 		void output(const ServerState& s) const override {
-			if(s.jobQueue.size() > 0)
-				outProcessed->addMessage(s.jobQueue.front());
+			outProcessed->addMessage(s.jobQueue.front());
 		}
 
 		[[nodiscard]] double timeAdvance(const ServerState& s) const override {

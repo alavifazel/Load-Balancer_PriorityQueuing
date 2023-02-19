@@ -51,12 +51,12 @@ namespace cadmium::loadbalancer {
 			outJob[2] = addOutBigPort<Job>("out3");
 		}
 		void internalTransition(LoadBalancerState& s) const override {
-			if(s.jobQueue.size() > 0) {
-				s.jobQueue.pop();
-				s.sigma = dispatchTime;
-			} else {
-				s.sigma = std::numeric_limits<double>::infinity();
+			s.jobQueue.pop();
+			if(s.jobQueue.empty()) {
 				s.phase = Passive;
+				s.sigma = std::numeric_limits<double>::infinity();
+			} else {
+				s.sigma = dispatchTime;
 			}
 		}
 
@@ -82,15 +82,13 @@ namespace cadmium::loadbalancer {
 		}
 
 		void output(const LoadBalancerState& s) const override {
-			if(s.jobQueue.size() > 0) {
-				Job job = s.jobQueue.top().second;
-				if (job.id % 3 == 0) {
-					outJob[0]->addMessage(job);
-				} else if (job.id % 3 == 1) {
-					outJob[1]->addMessage(job);
-				} else {
-					outJob[2]->addMessage(job);
-				}
+			Job job = s.jobQueue.top().second;
+			if (job.id % 3 == 0) {
+				outJob[0]->addMessage(job);
+			} else if (job.id % 3 == 1) {
+				outJob[1]->addMessage(job);
+			} else {
+				outJob[2]->addMessage(job);
 			}
 		}
 

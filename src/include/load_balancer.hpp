@@ -68,7 +68,7 @@ namespace cadmium::loadbalancer {
 			switch(s.phase) {
 				case Active:
 				{
-					s.sigma -= e;
+					//s.sigma -= e;
 					break;
 				}
 				case Passive:

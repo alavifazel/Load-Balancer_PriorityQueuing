@@ -14,7 +14,7 @@ int main(int argc, char *argv[]) {
         return -1;
     }
     int jobPeriod = stoi(argv[1]);
-    int processingTimeExpMean = stof(argv[2]);
+    double processingTimeExpMean = stof(argv[2]);
     double observationTime = stod(argv[3]);
     if(jobPeriod < 0 or processingTimeExpMean < 0 or observationTime < 0) {
         cerr << "ERROR: Parameters cannot be negative.\n";

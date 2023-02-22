@@ -2,7 +2,7 @@
 #include <cadmium/core/simulation/root_coordinator.hpp>
 #include <limits>
 #include "load_balancer.hpp"
-#include "job.hpp"
+#include "job_pair.hpp"
 #include "server.hpp"
 #include "transducer.hpp"
 #include "generator.hpp"
@@ -16,11 +16,12 @@ public:
 
     GeneratorTest(const std::string& id, double jobPeriod): Generator(id,jobPeriod){}
     void output(const GeneratorState& s) const override {
-            outGenerated->addMessage(Job(s.jobCount, s.clock + s.sigma));
+            int priority;
             if(s.jobCount == 2 || s.jobCount == 5 || s.jobCount == 6)
-                outPriority->addMessage(1);
+                priority = 1;
             else
-                outPriority->addMessage(6);
+                priority = 6;
+            outGenerated->addMessage(JobPair(priority, Job(s.jobCount, s.clock + s.sigma)));
         }
 };
 
@@ -36,7 +37,6 @@ namespace cadmium::loadbalancer {
 			auto transducer = addComponent<Transducer>("transducer", obsTime);
 			addCoupling(generator->outGenerated, transducer->inGenerated);
 			addCoupling(generator->outGenerated, loadBalancer->inJob);
-			addCoupling(generator->outPriority, loadBalancer->inPriority);
 			addCoupling(loadBalancer->outJob[0], servers[0]->inGenerated);
 			addCoupling(loadBalancer->outJob[1], servers[1]->inGenerated);
 			addCoupling(loadBalancer->outJob[2], servers[2]->inGenerated);

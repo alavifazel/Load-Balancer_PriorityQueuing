@@ -20,7 +20,6 @@ namespace cadmium::loadbalancer {
 			auto transducer = addComponent<Transducer>("transducer", obsTime);
 			addCoupling(generator->outGenerated, transducer->inGenerated);
 			addCoupling(generator->outGenerated, loadBalancer->inJob);
-			addCoupling(generator->outPriority, loadBalancer->inPriority);
 			addCoupling(loadBalancer->outJob[0], servers[0]->inGenerated);
 			addCoupling(loadBalancer->outJob[1], servers[1]->inGenerated);
 			addCoupling(loadBalancer->outJob[2], servers[2]->inGenerated);

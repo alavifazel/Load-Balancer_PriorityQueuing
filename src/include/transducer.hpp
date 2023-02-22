@@ -23,14 +23,14 @@ namespace cadmium::loadbalancer {
 
 	class Transducer : public Atomic<TransducerState> {
 	 public:
-		BigPort<Job> inGenerated;
+		BigPort<JobPair> inGenerated;
 		std::array<BigPort<Job>, 3> inProcessed;
 		Port<bool> outStop;
 		BigPort<double> averageProcessingTime;
 		BigPort<double> throughput;
 
 		Transducer(const std::string& id, double obsTime): Atomic<TransducerState>(id, TransducerState(obsTime)) {
-			inGenerated = addInBigPort<Job>("inGenerated");
+			inGenerated = addInBigPort<JobPair>("inGenerated");
 			inProcessed[0] = addInBigPort<Job>("inProcessed1");
 			inProcessed[1] = addInBigPort<Job>("inProcessed2");
 			inProcessed[2] = addInBigPort<Job>("inProcessed3");
@@ -49,7 +49,7 @@ namespace cadmium::loadbalancer {
 			s.clock += e;
 			for (auto& job: inGenerated->getBag()) {
 				s.nJobsGenerated += 1;
-				std::cout << "Job " << job->id << " generated at t = " << s.clock << std::endl;
+				std::cout << "Job " << job->job.id << " generated at t = " << s.clock << std::endl;
 			}
 			for (auto& job: inProcessed[0]->getBag()) {
 				s.nJobsProcessed += 1;

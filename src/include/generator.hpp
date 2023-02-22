@@ -4,7 +4,9 @@
 #include <cadmium/core/modeling/atomic.hpp>
 #include <iostream>
 #include <random>
+#include <utility>
 #include "job.hpp"
+#include "job_pair.hpp"
 #include "phase.hpp"
 
 namespace cadmium::loadbalancer {
@@ -33,15 +35,13 @@ namespace cadmium::loadbalancer {
 		}
 	 public:
 		Port<bool> inStop;
-		BigPort<Job> outGenerated;
-		BigPort<int> outPriority;
+		BigPort<JobPair> outGenerated;
 
 		Generator(const std::string& id, double jobPeriod)
 			: Atomic<GeneratorState>(id, GeneratorState()), jobPeriod(jobPeriod)
 		{
 			inStop = addInPort<bool>("inStop");
-			outPriority = addOutBigPort<int>("outPriority");
-			outGenerated = addOutBigPort<Job>("outGenerated");
+			outGenerated = addOutBigPort<JobPair>("outGenerated");
 		}
 
 		void internalTransition(GeneratorState& s) const override {
@@ -64,8 +64,7 @@ namespace cadmium::loadbalancer {
 		}
 
 		void output(const GeneratorState& s) const override {
-			outGenerated->addMessage(Job(s.jobCount, s.clock + s.sigma));
-			outPriority->addMessage(randInt(1,5));
+			outGenerated->addMessage(JobPair(randInt(1,5), Job(s.jobCount, s.clock + s.sigma)));
 		}
 
 		[[nodiscard]] double timeAdvance(const GeneratorState& s) const override {

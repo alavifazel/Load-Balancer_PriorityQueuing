@@ -8,6 +8,7 @@
 #include <queue>
 #include <utility>
 #include "job.hpp"
+#include "job_pair.hpp"
 #include "phase.hpp"
 
 namespace cadmium::loadbalancer {
@@ -36,16 +37,14 @@ namespace cadmium::loadbalancer {
 	private:
 		double dispatchTime;	
 	public:
-		BigPort<Job> inJob;
-		BigPort<int> inPriority;
+		BigPort<JobPair> inJob;
 		std::array<BigPort<Job>, 3> outJob;
 
 		LoadBalancer(const std::string& id, double dispatchTime=0.5)
 		: Atomic<LoadBalancerState>(id, LoadBalancerState()), 
 		dispatchTime(dispatchTime)
 		{
-			inJob = addInBigPort<Job>("in");
-			inPriority = addInBigPort<int>("inPriority");
+			inJob = addInBigPort<JobPair>("in");
 			outJob[0] = addOutBigPort<Job>("out1");
 			outJob[1] = addOutBigPort<Job>("out2");
 			outJob[2] = addOutBigPort<Job>("out3");
@@ -62,8 +61,7 @@ namespace cadmium::loadbalancer {
 
 		void externalTransition(LoadBalancerState& s, double e) const override {
 			auto newJob = inJob->getBag().back();
-			auto priority = inPriority->getBag().back();
-			s.jobQueue.push(std::make_pair(*priority, Job(newJob->id, newJob->timeGenerated)));
+			s.jobQueue.push(std::make_pair(newJob->job.id, Job(newJob->job.timeGenerated, newJob->job.timeGenerated)));
 
 			switch(s.phase) {
 				case Active:

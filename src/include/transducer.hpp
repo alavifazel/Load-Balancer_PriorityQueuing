@@ -37,6 +37,7 @@ namespace cadmium::loadbalancer {
 			outStop = addOutPort<bool>("outStop");
 			averageTA = addOutBigPort<double>("averageTA");
 			throughput = addOutBigPort<double>("throughput");
+
 		}
 
 		void internalTransition(TransducerState& s) const override {
@@ -53,6 +54,9 @@ namespace cadmium::loadbalancer {
 			}
 			for (auto& job: inProcessed[0]->getBag()) {
 				s.nJobsProcessed += 1;
+
+				std::cout << "XXX \n" << job->timeProcessed - job->timeGenerated<< std::endl;
+
 				s.totalTA += job->timeProcessed - job->timeGenerated;
 				std::cout << "1) Job " << job->id << " processed at t = " << s.clock << std::endl;
 			}

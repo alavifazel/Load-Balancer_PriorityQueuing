@@ -53,8 +53,11 @@ namespace cadmium::loadbalancer {
 		}
 
 		void externalTransition(ServerState& s, double e) const override {
+			auto processingTime = generateProcessingTime();
 			auto newJob = inGenerated->getBag().back();
-			s.jobQueue.push(Job(newJob->id, newJob->timeGenerated));
+			s.jobQueue.push(Job(newJob->id, 
+							newJob->timeGenerated, 
+							newJob->timeGenerated + processingTime));
 			switch(s.phase) {
 				case Active:
 				{
@@ -63,7 +66,7 @@ namespace cadmium::loadbalancer {
 				}
 				case Passive:
 				{
-					s.sigma = generateProcessingTime();
+					s.sigma = processingTime;
 					s.phase = Active;
 					break;
 				}

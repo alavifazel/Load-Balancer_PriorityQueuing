@@ -9,7 +9,9 @@ namespace cadmium::loadbalancer {
 		double timeGenerated;
 		double timeProcessed;
 
-		Job(int id, double timeGenerated): id(id), timeGenerated(timeGenerated), timeProcessed(-1) {};
+		Job(int id, double timeGenerated, double timeProcessed):
+			id(id), timeGenerated(timeGenerated), timeProcessed(timeProcessed) {}
+		Job(int id, double timeGenerated): Job(id, timeGenerated, -1) {}
 		Job(int id) {};
 	};
 

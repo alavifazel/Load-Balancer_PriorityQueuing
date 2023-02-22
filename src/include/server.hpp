@@ -23,10 +23,10 @@ namespace cadmium::loadbalancer {
 
 	class Server: public Atomic<ServerState> {
 	private:
-		double processingTimeExpLambda;
+		double processingTimeExpMean;
 		double generateProcessingTime() const {
 			std::random_device rd;
-			std::exponential_distribution<> rng(processingTimeExpLambda);
+			std::exponential_distribution<> rng(1/processingTimeExpMean);
 			std::mt19937 rnd_gen(rd());
 			return rng(rnd_gen);
 		}
@@ -34,9 +34,9 @@ namespace cadmium::loadbalancer {
 		BigPort<Job> inGenerated;
 		BigPort<Job> outProcessed;
 
-		Server(const std::string& id, double processingTimeExpLambda):
+		Server(const std::string& id, double processingTimeExpMean):
 			Atomic<ServerState>(id, ServerState()),
-			processingTimeExpLambda(processingTimeExpLambda)
+			processingTimeExpMean(processingTimeExpMean)
 			 {
 			inGenerated = addInBigPort<Job>("inGenerated");
 			outProcessed = addOutBigPort<Job>("outProcessed");

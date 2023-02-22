@@ -26,6 +26,8 @@ namespace cadmium::loadbalancer {
 		BigPort<Job> inGenerated;
 		std::array<BigPort<Job>, 3> inProcessed;
 		Port<bool> outStop;
+		BigPort<double> averageTA;
+		BigPort<double> throughput;
 
 		Transducer(const std::string& id, double obsTime): Atomic<TransducerState>(id, TransducerState(obsTime)) {
 			inGenerated = addInBigPort<Job>("inGenerated");
@@ -33,21 +35,13 @@ namespace cadmium::loadbalancer {
 			inProcessed[1] = addInBigPort<Job>("inProcessed2");
 			inProcessed[2] = addInBigPort<Job>("inProcessed3");
 			outStop = addOutPort<bool>("outStop");
+			averageTA = addOutBigPort<double>("averageTA");
+			throughput = addOutBigPort<double>("throughput");
 		}
 
 		void internalTransition(TransducerState& s) const override {
 			s.clock += s.sigma;
 			s.sigma = std::numeric_limits<double>::infinity();
-
-			std::cout << "End time: " << s.clock << std::endl;
-			std::cout << "Jobs generated: " << s.nJobsGenerated << std::endl;
-			std::cout << "Jobs processed: " << s.nJobsProcessed << std::endl;
-			if (s.nJobsProcessed > 0) {
-				std::cout << "Average TA: " << s.totalTA / (double) s.nJobsProcessed << std::endl;
-			}
-			if (s.clock > 0) {
-				std::cout << "Throughput: " << (double) s.nJobsProcessed /  s.clock << std::endl;
-			}
 		}
 
 		void externalTransition(TransducerState& s, double e) const override {
@@ -76,6 +70,17 @@ namespace cadmium::loadbalancer {
 
 		void output(const TransducerState& s) const override {
 			outStop->addMessage(true);
+			std::cout << "End time: " << s.clock << std::endl;
+			std::cout << "Jobs generated: " << s.nJobsGenerated << std::endl;
+			std::cout << "Jobs processed: " << s.nJobsProcessed << std::endl;
+			if (s.nJobsProcessed > 0) {
+				std::cout << "Average TA: " << s.totalTA / (double) s.nJobsProcessed << std::endl;
+				averageTA->addMessage(s.totalTA / (double) s.nJobsProcessed);
+			}
+			if (s.clock > 0) {
+				std::cout << "Throughput: " << (double) s.nJobsProcessed /  s.clock << std::endl;
+				throughput->addMessage((double) s.nJobsProcessed /  s.clock);
+			}
 		}
 
 		[[nodiscard]] double timeAdvance(const TransducerState& s) const override {

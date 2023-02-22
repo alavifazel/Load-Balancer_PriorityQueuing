@@ -10,13 +10,13 @@
 
 namespace cadmium::loadbalancer {
 	struct LBS: public Coupled {
-		LBS(const std::string& id, double jobPeriod, double processingTimeExpLambda, double obsTime): Coupled(id) {
+		LBS(const std::string& id, double jobPeriod, double processingTimeExpMean, double obsTime): Coupled(id) {
 			auto generator = addComponent<Generator>("generator", jobPeriod);
             auto loadBalancer = addComponent<LoadBalancer>("loadBalancer");
             std::array<std::shared_ptr<Server>, 3> servers;
-			servers[0] = addComponent<Server>("server1", processingTimeExpLambda);
-			servers[1] = addComponent<Server>("server2", processingTimeExpLambda);
-			servers[2] = addComponent<Server>("server3", processingTimeExpLambda);
+			servers[0] = addComponent<Server>("server1", processingTimeExpMean);
+			servers[1] = addComponent<Server>("server2", processingTimeExpMean);
+			servers[2] = addComponent<Server>("server3", processingTimeExpMean);
 			auto transducer = addComponent<Transducer>("transducer", obsTime);
 			addCoupling(generator->outGenerated, transducer->inGenerated);
 			addCoupling(generator->outGenerated, loadBalancer->inJob);

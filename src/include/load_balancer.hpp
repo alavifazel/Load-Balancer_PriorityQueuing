@@ -61,7 +61,7 @@ namespace cadmium::loadbalancer {
 
 		void externalTransition(LoadBalancerState& s, double e) const override {
 			auto newJob = inJob->getBag().back();
-			s.jobQueue.push(std::make_pair(newJob->job.id, Job(newJob->job.timeGenerated, newJob->job.timeGenerated)));
+			s.jobQueue.push(std::make_pair(newJob->priority, Job(newJob->job.id, newJob->job.timeGenerated, newJob->job.timeGenerated)));
 
 			switch(s.phase) {
 				case Active:
@@ -76,7 +76,6 @@ namespace cadmium::loadbalancer {
 					break;
 				}
 			}
-				
 		}
 
 		void output(const LoadBalancerState& s) const override {

@@ -8,9 +8,7 @@ namespace cadmium::loadbalancer {
 	struct JobPair {
         int priority;
         Job job;
-
 		JobPair(int priority, Job job): priority(priority), job(job){}
-
 	};
 
 	std::ostream& operator<<(std::ostream& out, const JobPair& j) {

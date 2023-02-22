@@ -10,14 +10,14 @@ namespace cadmium::loadbalancer {
 	struct TransducerState {
 		double clock;
 		double sigma;
-		double totalTA;
+		double totalProcessingTime;
 		int nJobsGenerated;
 		int nJobsProcessed;
-		explicit TransducerState(double obsTime) : clock(), sigma(obsTime), totalTA(), nJobsGenerated(), nJobsProcessed() {}
+		explicit TransducerState(double obsTime) : clock(), sigma(obsTime), totalProcessingTime(), nJobsGenerated(), nJobsProcessed() {}
 	};
 
 	std::ostream& operator<<(std::ostream &out, const TransducerState& s) {
-		out << "{" << s.totalTA << "," << s.nJobsGenerated << "," << s.nJobsProcessed << "}";
+		out << "{" << s.totalProcessingTime << "," << s.nJobsGenerated << "," << s.nJobsProcessed << "}";
 		return out;
 	}
 
@@ -26,7 +26,7 @@ namespace cadmium::loadbalancer {
 		BigPort<Job> inGenerated;
 		std::array<BigPort<Job>, 3> inProcessed;
 		Port<bool> outStop;
-		BigPort<double> averageTA;
+		BigPort<double> averageProcessingTime;
 		BigPort<double> throughput;
 
 		Transducer(const std::string& id, double obsTime): Atomic<TransducerState>(id, TransducerState(obsTime)) {
@@ -35,9 +35,8 @@ namespace cadmium::loadbalancer {
 			inProcessed[1] = addInBigPort<Job>("inProcessed2");
 			inProcessed[2] = addInBigPort<Job>("inProcessed3");
 			outStop = addOutPort<bool>("outStop");
-			averageTA = addOutBigPort<double>("averageTA");
+			averageProcessingTime = addOutBigPort<double>("averageProcessingTime");
 			throughput = addOutBigPort<double>("throughput");
-
 		}
 
 		void internalTransition(TransducerState& s) const override {
@@ -54,20 +53,17 @@ namespace cadmium::loadbalancer {
 			}
 			for (auto& job: inProcessed[0]->getBag()) {
 				s.nJobsProcessed += 1;
-
-				std::cout << "XXX \n" << job->timeProcessed - job->timeGenerated<< std::endl;
-
-				s.totalTA += job->timeProcessed - job->timeGenerated;
+				s.totalProcessingTime += job->timeProcessed - job->timeGenerated;
 				std::cout << "1) Job " << job->id << " processed at t = " << s.clock << std::endl;
 			}
 			for (auto& job: inProcessed[1]->getBag()) {
 				s.nJobsProcessed += 1;
-				s.totalTA += job->timeProcessed - job->timeGenerated;
+				s.totalProcessingTime += job->timeProcessed - job->timeGenerated;
 				std::cout << "2) Job " << job->id << " processed at t = " << s.clock << std::endl;
 			}
 			for (auto& job: inProcessed[2]->getBag()) {
 				s.nJobsProcessed += 1;
-				s.totalTA += job->timeProcessed - job->timeGenerated;
+				s.totalProcessingTime += job->timeProcessed - job->timeGenerated;
 				std::cout << "3) Job " << job->id << " processed at t = " << s.clock << std::endl;
 			}
 		}
@@ -78,8 +74,8 @@ namespace cadmium::loadbalancer {
 			std::cout << "Jobs generated: " << s.nJobsGenerated << std::endl;
 			std::cout << "Jobs processed: " << s.nJobsProcessed << std::endl;
 			if (s.nJobsProcessed > 0) {
-				std::cout << "Average TA: " << s.totalTA / (double) s.nJobsProcessed << std::endl;
-				averageTA->addMessage(s.totalTA / (double) s.nJobsProcessed);
+				std::cout << "Average Processing Time: " << s.totalProcessingTime / (double) s.nJobsProcessed << std::endl;
+				averageProcessingTime->addMessage(s.totalProcessingTime / (double) s.nJobsProcessed);
 			}
 			if (s.clock > 0) {
 				std::cout << "Throughput: " << (double) s.nJobsProcessed /  s.clock << std::endl;

@@ -49,6 +49,7 @@ namespace cadmium::loadbalancer {
 				case Active:
 					s.sigma = jobPeriod;
 					s.jobCount += 1;
+					s.clock += s.sigma;
 					break;
 				case Passive:
 					break; // Never reaches

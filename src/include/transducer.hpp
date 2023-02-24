@@ -24,20 +24,20 @@ namespace cadmium::loadbalancer {
 
 	class Transducer : public Atomic<TransducerState> {
 	 public:
-		BigPort<JobPair> inGenerated;
-		std::array<BigPort<Job>, 3> inProcessed;
+		Port<JobPair> inGenerated;
+		std::array<Port<Job>, 3> inProcessed;
 		Port<bool> outStop;
-		BigPort<double> averageProcessingTime;
-		BigPort<double> throughput;
+		Port<double> averageProcessingTime;
+		Port<double> throughput;
 
 		Transducer(const std::string& id, double obsTime): Atomic<TransducerState>(id, TransducerState(obsTime)) {
-			inGenerated = addInBigPort<JobPair>("inGenerated");
-			inProcessed[0] = addInBigPort<Job>("inProcessed1");
-			inProcessed[1] = addInBigPort<Job>("inProcessed2");
-			inProcessed[2] = addInBigPort<Job>("inProcessed3");
+			inGenerated = addInPort<JobPair>("inGenerated");
+			inProcessed[0] = addInPort<Job>("inProcessed1");
+			inProcessed[1] = addInPort<Job>("inProcessed2");
+			inProcessed[2] = addInPort<Job>("inProcessed3");
 			outStop = addOutPort<bool>("outStop");
-			averageProcessingTime = addOutBigPort<double>("averageProcessingTime");
-			throughput = addOutBigPort<double>("throughput");
+			averageProcessingTime = addOutPort<double>("averageProcessingTime");
+			throughput = addOutPort<double>("throughput");
 		}
 
 		void internalTransition(TransducerState& s) const override {
@@ -50,22 +50,22 @@ namespace cadmium::loadbalancer {
 			s.clock += e;
 			for (auto& job: inGenerated->getBag()) {
 				s.nJobsGenerated += 1;
-				std::cout << "Job " << job->job.id << " generated at t = " << s.clock << std::endl;
+				std::cout << "Job " << job.job.id << " generated at t = " << s.clock << std::endl;
 			}
 			for (auto& job: inProcessed[0]->getBag()) {
 				s.nJobsProcessed += 1;
-				s.totalProcessingTime += job->timeProcessed - job->timeGenerated;
-				std::cout << "1) Job " << job->id << " processed at t = " << s.clock << std::endl;
+				s.totalProcessingTime += job.timeProcessed - job.timeGenerated;
+				std::cout << "1) Job " << job.id << " processed at t = " << s.clock << std::endl;
 			}
 			for (auto& job: inProcessed[1]->getBag()) {
 				s.nJobsProcessed += 1;
-				s.totalProcessingTime += job->timeProcessed - job->timeGenerated;
-				std::cout << "2) Job " << job->id << " processed at t = " << s.clock << std::endl;
+				s.totalProcessingTime += job.timeProcessed - job.timeGenerated;
+				std::cout << "2) Job " << job.id << " processed at t = " << s.clock << std::endl;
 			}
 			for (auto& job: inProcessed[2]->getBag()) {
 				s.nJobsProcessed += 1;
-				s.totalProcessingTime += job->timeProcessed - job->timeGenerated;
-				std::cout << "3) Job " << job->id << " processed at t = " << s.clock << std::endl;
+				s.totalProcessingTime += job.timeProcessed - job.timeGenerated;
+				std::cout << "3) Job " << job.id << " processed at t = " << s.clock << std::endl;
 			}
 		}
 

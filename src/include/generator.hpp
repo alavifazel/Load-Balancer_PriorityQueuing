@@ -35,13 +35,13 @@ namespace cadmium::loadbalancer {
 		}
 	 public:
 		Port<bool> inStop;
-		BigPort<JobPair> outGenerated;
+		Port<JobPair> outGenerated;
 
 		Generator(const std::string& id, double jobPeriod)
 			: Atomic<GeneratorState>(id, GeneratorState()), jobPeriod(jobPeriod)
 		{
 			inStop = addInPort<bool>("inStop");
-			outGenerated = addOutBigPort<JobPair>("outGenerated");
+			outGenerated = addOutPort<JobPair>("outGenerated");
 		}
 
 		void internalTransition(GeneratorState& s) const override {

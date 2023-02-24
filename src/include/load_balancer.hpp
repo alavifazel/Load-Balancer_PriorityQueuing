@@ -37,17 +37,17 @@ namespace cadmium::loadbalancer {
 	private:
 		double dispatchTime;	
 	public:
-		BigPort<JobPair> inJob;
-		std::array<BigPort<Job>, 3> outJob;
+		Port<JobPair> inJob;
+		std::array<Port<Job>, 3> outJob;
 
 		LoadBalancer(const std::string& id, double dispatchTime=0.5)
 		: Atomic<LoadBalancerState>(id, LoadBalancerState()), 
 		dispatchTime(dispatchTime)
 		{
-			inJob = addInBigPort<JobPair>("in");
-			outJob[0] = addOutBigPort<Job>("out1");
-			outJob[1] = addOutBigPort<Job>("out2");
-			outJob[2] = addOutBigPort<Job>("out3");
+			inJob = addInPort<JobPair>("in");
+			outJob[0] = addOutPort<Job>("out1");
+			outJob[1] = addOutPort<Job>("out2");
+			outJob[2] = addOutPort<Job>("out3");
 		}
 		void internalTransition(LoadBalancerState& s) const override {
 			s.jobQueue.pop();
@@ -61,7 +61,7 @@ namespace cadmium::loadbalancer {
 
 		void externalTransition(LoadBalancerState& s, double e) const override {
 			auto newJob = inJob->getBag().back();
-			s.jobQueue.push(std::make_pair(newJob->priority, Job(newJob->job.id, newJob->job.timeGenerated, newJob->job.timeGenerated)));
+			s.jobQueue.push(std::make_pair(newJob.priority, Job(newJob.job.id, newJob.job.timeGenerated, newJob.job.timeGenerated)));
 
 			switch(s.phase) {
 				case Active:

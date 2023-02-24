@@ -20,6 +20,10 @@ namespace cadmium::loadbalancer {
 		out << "{" << j.id << "," << j.timeGenerated << "," << j.timeProcessed << "}";
 		return out;
 	}
+	std::istream& operator>> (std::istream& is, Job& job) {
+        is >> job.id >> job.timeGenerated >> job.timeProcessed;
+        return is;
+    }
 }
 
 #endif 

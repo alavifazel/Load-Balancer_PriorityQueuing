@@ -31,15 +31,15 @@ namespace cadmium::loadbalancer {
 			return rng(rnd_gen);
 		}
 	public:
-		BigPort<Job> inGenerated;
-		BigPort<Job> outProcessed;
+		Port<Job> inGenerated;
+		Port<Job> outProcessed;
 
 		Server(const std::string& id, double processingTimeExpMean):
 			Atomic<ServerState>(id, ServerState()),
 			processingTimeExpMean(processingTimeExpMean)
 			 {
-			inGenerated = addInBigPort<Job>("inGenerated");
-			outProcessed = addOutBigPort<Job>("outProcessed");
+			inGenerated = addInPort<Job>("inGenerated");
+			outProcessed = addOutPort<Job>("outProcessed");
 		}
 
 		void internalTransition(ServerState& s) const override {
@@ -55,9 +55,9 @@ namespace cadmium::loadbalancer {
 		void externalTransition(ServerState& s, double e) const override {
 			auto processingTime = generateProcessingTime();
 			auto newJob = inGenerated->getBag().back();
-			s.jobQueue.push(Job(newJob->id, 
-							newJob->timeGenerated, 
-							newJob->timeGenerated + processingTime));
+			s.jobQueue.push(Job(newJob.id, 
+							newJob.timeGenerated, 
+							newJob.timeGenerated + processingTime));
 			switch(s.phase) {
 				case Active:
 				{

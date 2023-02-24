@@ -8,14 +8,14 @@
 
 namespace cadmium::loadbalancer {
 	struct LBS: public Coupled {
-		BigPort<JobPair> inJob;
-		std::array<BigPort<Job>, 3> outProcessed;
+		Port<JobPair> inJob;
+		std::array<Port<Job>, 3> outProcessed;
 
 		LBS(const std::string& id, double processingTimeExpMean): Coupled(id) {
-			inJob = addInBigPort<JobPair>("inJob");
-			outProcessed[0] = addOutBigPort<Job>("outProcessed1");	
-			outProcessed[1] = addOutBigPort<Job>("outProcessed2");
-			outProcessed[2] = addOutBigPort<Job>("outProcessed3");
+			inJob = addInPort<JobPair>("inJob");
+			outProcessed[0] = addOutPort<Job>("outProcessed1");	
+			outProcessed[1] = addOutPort<Job>("outProcessed2");
+			outProcessed[2] = addOutPort<Job>("outProcessed3");
 
             auto loadBalancer = addComponent<LoadBalancer>("loadBalancer");
             std::array<std::shared_ptr<Server>, 3> servers;

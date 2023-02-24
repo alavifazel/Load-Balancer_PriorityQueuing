@@ -9,12 +9,17 @@ namespace cadmium::loadbalancer {
         int priority;
         Job job;
 		JobPair(int priority, Job job): priority(priority), job(job){}
+		JobPair(){}
 	};
 
 	std::ostream& operator<<(std::ostream& out, const JobPair& j) {
 		out << "{" << j.job.id << "," << j.job.timeGenerated << "," << j.job.timeProcessed << ", P: " << j.priority << "}";
 		return out;
 	}
+	std::istream& operator>> (std::istream& is, JobPair& jobPair) {
+        is >> jobPair.priority >> jobPair.job.id >> jobPair.job.timeGenerated >> jobPair.job.timeProcessed;
+        return is;
+    }
 }
 
 #endif 

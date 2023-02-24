@@ -3,7 +3,7 @@
 #include <cadmium/lib/iestream.hpp>
 #include <limits>
 #include <fstream>
-#include "load_balancer.hpp"
+#include "generator.hpp"
 #include "job_pair.hpp"
 #include "job.hpp"
 
@@ -12,17 +12,17 @@ using namespace std;
 
 namespace cadmium::loadbalancer::iestream {
 	struct iestream_coupled : public Coupled {
-		iestream_coupled(const std::string& id, const char* filePath, double processingTimeExpMean): Coupled(id) {
-			auto iestream1 = addComponent<lib::IEStream<JobPair>>("iestream", filePath);
-            auto balancer = addComponent<LoadBalancer>("balancer", processingTimeExpMean);
-            addCoupling(iestream1->out, balancer->inJob);
+		iestream_coupled(const std::string& id, const char* filePath, double jobPeriod): Coupled(id) {
+			auto iestream1 = addComponent<lib::IEStream<bool>>("iestream", filePath);
+            auto generator = addComponent<Generator>("generator", jobPeriod);
+            addCoupling(iestream1->out, generator->inStop);
 		}
 	};
 }
 
 int main(int argc, char *argv[]) {
 	std::ifstream file;
-    const double processingTimeExpMean = 5;
+    const double jobPeriod = 2;
 	if (argc < 2) { // Check that file is included
         std::cerr << "ERROR: not enough arguments" << std::endl;
         std::cerr << "    Usage:" << std::endl;
@@ -38,9 +38,9 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
-	auto model = std::make_shared<iestream::iestream_coupled>("IEStreamCoupled", filePath, processingTimeExpMean);
+	auto model = std::make_shared<iestream::iestream_coupled>("IEStreamCoupled", filePath, jobPeriod);
 	auto rootCoordinator = cadmium::RootCoordinator(model);
-	auto logger = std::make_shared<cadmium::CSVLogger>("balancer_test.csv", ";");
+	auto logger = std::make_shared<cadmium::CSVLogger>("generator_test.csv", ";");
 	rootCoordinator.setLogger(logger);
 	rootCoordinator.start();
 	rootCoordinator.simulate(std::numeric_limits<double>::infinity());

@@ -9,8 +9,8 @@ using namespace cadmium::loadbalancer;
 using namespace std;
 
 namespace cadmium::loadbalancer {
-	struct TopLevelModel: public Coupled {
-		TopLevelModel(const std::string& id, double jobPeriod, double processingTimeExpMean, double obsTime): Coupled(id) {
+	struct LoadBalancedNetwork: public Coupled {
+		LoadBalancedNetwork(const std::string& id, double jobPeriod, double processingTimeExpMean, double obsTime): Coupled(id) {
 
             auto lbs = addComponent<LBS>("LBS", processingTimeExpMean);
 			auto generator = addComponent<Generator>("generator", jobPeriod);
@@ -42,7 +42,7 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
-    auto model = make_shared<TopLevelModel>("top", jobPeriod, processingTimeExpMean, observationTime);
+    auto model = make_shared<LoadBalancedNetwork>("top", jobPeriod, processingTimeExpMean, observationTime);
     auto rootCoordinator = cadmium::RootCoordinator(model);
     auto logger = make_shared<cadmium::CSVLogger>("log.csv", ";");
     rootCoordinator.setLogger(logger);

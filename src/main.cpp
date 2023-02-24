@@ -44,7 +44,7 @@ int main(int argc, char *argv[]) {
 
     auto model = make_shared<TopLevelModel>("top", jobPeriod, processingTimeExpMean, observationTime);
     auto rootCoordinator = cadmium::RootCoordinator(model);
-    auto logger = make_shared<cadmium::CSVLogger>("log_gpt.csv", ";");
+    auto logger = make_shared<cadmium::CSVLogger>("log.csv", ";");
     rootCoordinator.setLogger(logger);
     rootCoordinator.start();
     rootCoordinator.simulate(numeric_limits<double>::infinity());

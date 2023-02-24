@@ -13,7 +13,7 @@ namespace cadmium::loadbalancer {
 
 		LBS(const std::string& id, double processingTimeExpMean): Coupled(id) {
 			inJob = addInBigPort<JobPair>("inJob");
-			outProcessed[0] = addOutBigPort<Job>("outProcessed1");
+			outProcessed[0] = addOutBigPort<Job>("outProcessed1");	
 			outProcessed[1] = addOutBigPort<Job>("outProcessed2");
 			outProcessed[2] = addOutBigPort<Job>("outProcessed3");
 

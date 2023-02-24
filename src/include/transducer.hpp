@@ -5,6 +5,7 @@
 #include <array>
 #include <iostream>
 #include "job.hpp"
+#include "job_pair.hpp"
 
 namespace cadmium::loadbalancer {
 	struct TransducerState {

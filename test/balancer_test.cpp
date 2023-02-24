@@ -4,11 +4,12 @@
 #include <fstream>
 #include "load_balancer.hpp"
 #include "job_pair.hpp"
+#include "job.hpp"
 
 using namespace cadmium::loadbalancer;
 using namespace std;
 
-namespace cadmium::loadbalancer {
+namespace cadmium::loadbalancer::loadbalancer {
     struct TestInputState {
 		double sigma;
 		Phase phase;
@@ -23,13 +24,13 @@ namespace cadmium::loadbalancer {
             }
             this->jobPairs = jobPairs;
             this->genIntervals = genIntervals;
-
         }
 	};
 
 	std::ostream& operator<<(std::ostream& out, const TestInputState& s) {
 		return out;
 	}
+
 	class TestInput : public Atomic<TestInputState> {
 	 public:
 		BigPort<JobPair> outGenerated;
@@ -61,9 +62,7 @@ namespace cadmium::loadbalancer {
 			return s.sigma;
 		}
 	};
-}
 
-namespace cadmium::loadbalancer {
 	struct LoadBalancerTest: public Coupled {
 		LoadBalancerTest(const std::string& id, std::vector<JobPair> jobPairs, std::vector<int> genIntervals): Coupled(id) {
 			auto testInput = addComponent<TestInput>("TestInput", jobPairs, genIntervals);
@@ -71,10 +70,10 @@ namespace cadmium::loadbalancer {
             addCoupling(testInput->outGenerated, loadBalancer->inJob);
 		}
 	};
-} 
+}
 
 int main(int argc, char *argv[]) {
-    string filename = "../input_data/balancer_input_test.txt";
+    string filename = "../input_data/balancer_test_input.txt";
     ifstream myfile(filename);
     string line;
     std::vector<JobPair> jobPairs;
@@ -90,9 +89,9 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    auto model = make_shared<LoadBalancerTest>("LoadBalancerTest", jobPairs, genIntervals);
+    auto model = make_shared<loadbalancer::LoadBalancerTest>("LoadBalancerTest", jobPairs, genIntervals);
     auto rootCoordinator = cadmium::RootCoordinator(model);
-    auto logger = make_shared<cadmium::CSVLogger>("log_gpt.csv", ";");
+    auto logger = make_shared<cadmium::CSVLogger>("log_balancer_test.csv", ";");
     rootCoordinator.setLogger(logger);
     rootCoordinator.start();
     rootCoordinator.simulate(numeric_limits<double>::infinity());

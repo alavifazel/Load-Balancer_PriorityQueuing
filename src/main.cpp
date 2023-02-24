@@ -11,13 +11,13 @@ using namespace std;
 namespace cadmium::loadbalancer {
     Port<double> throughput;
     Port<double> averageProcessingTime;
-	struct LoadBalancedNetwork: public Coupled {
-		LoadBalancedNetwork(const std::string& id, double jobPeriod, double processingTimeExpMean, double obsTime): Coupled(id) {
+	struct PriorityQueueLoadBalancing: public Coupled {
+		PriorityQueueLoadBalancing(const std::string& id, double jobPeriod, double processingTimeExpMean, double obsTime): Coupled(id) {
             averageProcessingTime = addOutPort<double>("averageProcessingTime");	
             throughput = addOutPort<double>("throughput");	
             auto lbs = addComponent<LoadBalancerSystem>("LoadBalancerSystem", processingTimeExpMean);
 			auto generator = addComponent<Generator>("generator", jobPeriod);
-			auto transducer = addComponent<Transducer>("transducer", obsTime);
+			auto transducer = addComponent<Transducer>("transducer", obsTime, processingTimeExpMean);
 
 			addCoupling(generator->outGenerated, transducer->inGenerated);
 			addCoupling(generator->outGenerated, lbs->inJob);
@@ -47,7 +47,7 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
-    auto model = make_shared<LoadBalancedNetwork>("top", jobPeriod, processingTimeExpMean, observationTime);
+    auto model = make_shared<PriorityQueueLoadBalancing>("top", jobPeriod, processingTimeExpMean, observationTime);
     auto rootCoordinator = cadmium::RootCoordinator(model);
     auto logger = make_shared<cadmium::CSVLogger>("log.csv", ";");
     rootCoordinator.setLogger(logger);

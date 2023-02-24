@@ -14,7 +14,13 @@ namespace cadmium::loadbalancer {
 		double totalProcessingTime;
 		int nJobsGenerated;
 		int nJobsProcessed;
-		explicit TransducerState(double obsTime) : clock(), sigma(obsTime), totalProcessingTime(), nJobsGenerated(), nJobsProcessed() {}
+		bool waitingForServersProcessing;
+		explicit TransducerState(double obsTime) : clock(), 
+												   sigma(obsTime), 
+												   totalProcessingTime(), 
+												   nJobsGenerated(), 
+												   nJobsProcessed(),
+												   waitingForServersProcessing(false) {}
 	};
 
 	std::ostream& operator<<(std::ostream &out, const TransducerState& s) {
@@ -29,8 +35,10 @@ namespace cadmium::loadbalancer {
 		Port<bool> outStop;
 		Port<double> averageProcessingTime;
 		Port<double> throughput;
+		double serverProcessingExpMean;
 
-		Transducer(const std::string& id, double obsTime): Atomic<TransducerState>(id, TransducerState(obsTime)) {
+		Transducer(const std::string& id, double obsTime, double serverProcessingExpMean): 
+							Atomic<TransducerState>(id, TransducerState(obsTime)), serverProcessingExpMean(serverProcessingExpMean) {
 			inGenerated = addInPort<JobPair>("inGenerated");
 			inProcessed[0] = addInPort<Job>("inProcessed1");
 			inProcessed[1] = addInPort<Job>("inProcessed2");
@@ -41,8 +49,15 @@ namespace cadmium::loadbalancer {
 		}
 
 		void internalTransition(TransducerState& s) const override {
-			s.clock += s.sigma;
-			s.sigma = std::numeric_limits<double>::infinity();
+			switch(s.waitingForServersProcessing) {
+				case false:
+					s.waitingForServersProcessing = true;
+					s.sigma = serverProcessingExpMean * s.nJobsGenerated;
+					break;
+				default:
+					s.sigma = std::numeric_limits<double>::infinity();
+					break;
+			}
 		}
 
 		void externalTransition(TransducerState& s, double e) const override {

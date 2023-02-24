@@ -1,7 +1,7 @@
 #include <cadmium/core/logger/csv.hpp>
 #include <cadmium/core/simulation/root_coordinator.hpp>
 #include <limits>
-#include "lbs.hpp"
+#include "load_balancer_system.hpp"
 #include "generator.hpp"
 #include "transducer.hpp"
 
@@ -9,13 +9,13 @@ using namespace cadmium::loadbalancer;
 using namespace std;
 
 namespace cadmium::loadbalancer {
+    Port<double> throughput;
     Port<double> averageProcessingTime;
-	Port<double> throughput;
 	struct LoadBalancedNetwork: public Coupled {
 		LoadBalancedNetwork(const std::string& id, double jobPeriod, double processingTimeExpMean, double obsTime): Coupled(id) {
             averageProcessingTime = addOutPort<double>("averageProcessingTime");	
             throughput = addOutPort<double>("throughput");	
-            auto lbs = addComponent<LBS>("LBS", processingTimeExpMean);
+            auto lbs = addComponent<LoadBalancerSystem>("LoadBalancerSystem", processingTimeExpMean);
 			auto generator = addComponent<Generator>("generator", jobPeriod);
 			auto transducer = addComponent<Transducer>("transducer", obsTime);
 

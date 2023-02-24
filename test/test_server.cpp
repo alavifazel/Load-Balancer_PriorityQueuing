@@ -15,7 +15,7 @@ namespace cadmium::loadbalancer::iestream {
 		iestream_coupled(const std::string& id, const char* filePath): Coupled(id) {
 			auto iestream1 = addComponent<lib::IEStream<Job>>("iestream", filePath);
             auto server = addComponent<Server>("server",10);
-            addCoupling(iestream1->out, server->inGenerated);
+            addCoupling(iestream1->out, server->inJob);
 		}
 	};
 }

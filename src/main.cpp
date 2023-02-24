@@ -9,9 +9,12 @@ using namespace cadmium::loadbalancer;
 using namespace std;
 
 namespace cadmium::loadbalancer {
+    Port<double> averageProcessingTime;
+	Port<double> throughput;
 	struct LoadBalancedNetwork: public Coupled {
 		LoadBalancedNetwork(const std::string& id, double jobPeriod, double processingTimeExpMean, double obsTime): Coupled(id) {
-
+            averageProcessingTime = addOutPort<double>("averageProcessingTime");	
+            throughput = addOutPort<double>("throughput");	
             auto lbs = addComponent<LBS>("LBS", processingTimeExpMean);
 			auto generator = addComponent<Generator>("generator", jobPeriod);
 			auto transducer = addComponent<Transducer>("transducer", obsTime);
@@ -22,6 +25,8 @@ namespace cadmium::loadbalancer {
 			addCoupling(lbs->outProcessed[1], transducer->inProcessed[1]);
 			addCoupling(lbs->outProcessed[2], transducer->inProcessed[2]);
 			addCoupling(transducer->outStop, generator->inStop);
+			addCoupling(transducer->throughput, throughput);
+            addCoupling(transducer->averageProcessingTime, averageProcessingTime);
 		}
 	};
 }

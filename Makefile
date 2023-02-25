@@ -87,6 +87,7 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
+	git submodule update --init
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/iman/0/PriorityQueue_Load-Balancer/CMakeFiles /home/iman/0/PriorityQueue_Load-Balancer//CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/iman/0/PriorityQueue_Load-Balancer/CMakeFiles 0
@@ -345,6 +346,9 @@ cmake_check_build_system:
 	$(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 
+run: 
+	./bin/main $(genPeriod) $(procTime) $(obsTime)
+
 run_generator_test:
 	./bin/test_generator input_data/generator_test_input.txt
 	echo "Done. Visit the log file"
@@ -354,7 +358,7 @@ run_server_test:
 	echo "Done. Visit the log file"
 
 run_transducer_test:
-	./bin/test_transducer input_data/transducer_test_input_generator.txt input_data/transducer_test_input_processed.txt
+	./bin/test_transducer input_data/transducer_test_input_generator.txt input_data/transducer_test_input_processed.txt > /dev/null
 	echo "Done. Visit the log file"
 
 run_balancer_test:

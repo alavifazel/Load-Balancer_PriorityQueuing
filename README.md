@@ -28,7 +28,7 @@ For instance:
 ./bin/main 2 5 1000
 ```
 
-This example runs the simulation with job generation period of 2 time units, each server having the processing time with mean value of 5, and for 1000 time units. Running this command produces:
+This example runs the simulation with job generation period of 2 time units, each server having the processing time with mean value of 5, and for 1000 time units. Running this example produces:
 
 ```
 ...

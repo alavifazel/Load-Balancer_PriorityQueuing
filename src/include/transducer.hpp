@@ -85,18 +85,27 @@ namespace cadmium::loadbalancer {
 		}
 
 		void output(const TransducerState& s) const override {
-			outStop->addMessage(true);
-			std::cout << "End time: " << s.clock << std::endl;
-			std::cout << "Jobs generated: " << s.nJobsGenerated << std::endl;
-			std::cout << "Jobs processed: " << s.nJobsProcessed << std::endl;
-			if (s.nJobsProcessed > 0) {
-				std::cout << "Average Processing Time: " << s.totalProcessingTime / (double) s.nJobsProcessed << std::endl;
-				averageProcessingTime->addMessage(s.totalProcessingTime / (double) s.nJobsProcessed);
+			switch(s.waitingForServersProcessing) {
+				case true:
+					outStop->addMessage(true);
+					std::cout << "End time: " << s.clock << std::endl;
+					std::cout << "Jobs generated: " << s.nJobsGenerated << std::endl;
+					std::cout << "Jobs processed: " << s.nJobsProcessed << std::endl;
+					if (s.nJobsProcessed > 0) {
+						std::cout << "Average Processing Time: " << s.totalProcessingTime / (double) s.nJobsProcessed << std::endl;
+						averageProcessingTime->addMessage(s.totalProcessingTime / (double) s.nJobsProcessed);
+					}
+					if (s.clock > 0) {
+						std::cout << "Throughput: " << (double) s.nJobsProcessed /  s.clock << std::endl;
+						throughput->addMessage((double) s.nJobsProcessed / s.clock);
+					}
+					break;
+				default:
+					outStop->addMessage(true);
+					break;
+
 			}
-			if (s.clock > 0) {
-				std::cout << "Throughput: " << (double) s.nJobsProcessed /  s.clock << std::endl;
-				throughput->addMessage((double) s.nJobsProcessed /  s.clock);
-			}
+			
 		}
 
 		[[nodiscard]] double timeAdvance(const TransducerState& s) const override {

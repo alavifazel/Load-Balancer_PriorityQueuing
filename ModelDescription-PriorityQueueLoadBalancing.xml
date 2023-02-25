@@ -5,7 +5,7 @@
 			<Port name="thorughput" type="double" description="throughput of the whole system"/>
 			<Port name="averageProcessingTime" type="double" description="the average processing time for generated jobs"/>
 		</Outputs>
-		<Files>	
+		<Files>
 			<File name="main.cpp" type="cpp" location="/src"/>
 		</Files>
 	</Model>
@@ -16,61 +16,61 @@
 		<Outputs>
 			<Port name="outProcessed[0]" type="Job" description="a job that successfully processes by a server"/>
 			<Port name="outProcessed[1]" type="Job" description="a job that successfully processes by a server"/>
-            <Port name="outProcessed[2]" type="Job" description="a job that successfully processes by a server"/>
+			<Port name="outProcessed[2]" type="Job" description="a job that successfully processes by a server"/>
 		</Outputs>
-		<Files>	
+		<Files>
 			<File name="load_balancer_system.cpp" type="cpp" location="/src/include"/>
 		</Files>
 	</Model>
 	<Model name="Generator" type="atomic" description="A model that periodically generates jobs.">
-    <Input>
-		<Port name="inStop" type="boolean" description="signals the generator to stop creating jobs"/>
-	</Input>
-	<Outputs>
-		<Port name="outGenerated" type="JobPair" description="a pair of job and its priority for execution"/>
-	</Outputs>
-	<Files>	
-		<File name="generator.hpp" type="hpp" location="/src/include"/>
-	</Files>
+		<Input>
+			<Port name="inStop" type="boolean" description="signals the generator to stop creating jobs"/>
+		</Input>
+		<Outputs>
+			<Port name="outGenerated" type="JobPair" description="a pair of job and its priority for execution"/>
+		</Outputs>
+		<Files>
+			<File name="generator.hpp" type="hpp" location="/src/include"/>
+		</Files>
 	</Model>
 	<Model name="LoadBalancer" type="atomic" description="A model which receives jobs and dispatches them to different servers using priority scheduling algorithm">
-    <Input>
-		<Port name="inJob" type="JobPair" description="a pair of job and its priority for execution"/>
-	</Input>
-	<Outputs>
-		<Port name="outJob[0]" type="Job" description="a job to be executed by a server."/>
-		<Port name="outJob[1]" type="Job" description="a job to be executed by a server."/>
-		<Port name="outJob[2]" type="Job" description="a job to be executed by a server."/>
-	</Outputs>
-	<Files>	
-		<File name="load_balancer.hpp" type="hpp" location="/src/include"/>
-	</Files>
+		<Input>
+			<Port name="inJob" type="JobPair" description="a pair of job and its priority for execution"/>
+		</Input>
+		<Outputs>
+			<Port name="outJob[0]" type="Job" description="a job to be executed by a server."/>
+			<Port name="outJob[1]" type="Job" description="a job to be executed by a server."/>
+			<Port name="outJob[2]" type="Job" description="a job to be executed by a server."/>
+		</Outputs>
+		<Files>
+			<File name="load_balancer.hpp" type="hpp" location="/src/include"/>
+		</Files>
 	</Model>
 	<Model name="Server" type="atomic" description="Representation of a generic server which processes jobs in exponential time distribution.">
-    <Input>
-		<Port name="inJob" type="Job" description="a job to be processed"/>
-	</Input>
-	<Outputs>
-		<Port name="outProcessed" type="Job" description="the processed job"/>
-	</Outputs>
-	<Files>	
-		<File name="server.hpp" type="hpp" location="/src/include"/>
-	</Files>
+		<Input>
+			<Port name="inJob" type="Job" description="a job to be processed"/>
+		</Input>
+		<Outputs>
+			<Port name="outProcessed" type="Job" description="the processed job"/>
+		</Outputs>
+		<Files>
+			<File name="server.hpp" type="hpp" location="/src/include"/>
+		</Files>
 	</Model>
 	<Model name="Transducer" type="atomic" description="A model which receives jobs before and after being created">
-    <Input>
-		<Port name="inGenerated" type="JobPair" description="a job generated alongside its priority for execution"/>
-		<Port name="inProcessed[0]" type="Job" description="a job that was processed by a server"/>
-		<Port name="inProcessed[1]" type="Job" description="a job that was processed by a server"/>
-		<Port name="inProcessed[2]" type="Job" description="a job that was processed by a server"/>
-	</Input>
-	<Outputs>
-		<Port name="throughput" type="double" description="the throughput of the system after observation time"/>
-		<Port name="averageProcessingTime" type="double" description="the average time takes for all the jobs to be processed"/>
-		<Port name="outStop" type="boolean" description="A boolean signal that stops the generator from further creating jobs."/>
-	</Outputs>
-	<Files>	
-		<File name="transducer.hpp" type="hpp" location="/src/include"/>
-	</Files>
-    </Model>
+		<Input>
+			<Port name="inGenerated" type="JobPair" description="a job generated alongside its priority for execution"/>
+			<Port name="inProcessed[0]" type="Job" description="a job that was processed by a server"/>
+			<Port name="inProcessed[1]" type="Job" description="a job that was processed by a server"/>
+			<Port name="inProcessed[2]" type="Job" description="a job that was processed by a server"/>
+		</Input>
+		<Outputs>
+			<Port name="throughput" type="double" description="the throughput of the system after observation time"/>
+			<Port name="averageProcessingTime" type="double" description="the average time takes for all the jobs to be processed"/>
+			<Port name="outStop" type="boolean" description="A boolean signal that stops the generator from further creating jobs."/>
+		</Outputs>
+		<Files>
+			<File name="transducer.hpp" type="hpp" location="/src/include"/>
+		</Files>
+	</Model>
 </Models>

@@ -1,0 +1,3 @@
+[submodule "cadmium_v2"]
+	path = cadmium_v2
+	url = https://github.com/SimulationEverywhere/cadmium_v2.git

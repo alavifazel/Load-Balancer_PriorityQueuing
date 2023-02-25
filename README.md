@@ -1,5 +1,5 @@
 ## Load-balancer with priority queuing
-This repository contains the code to model a load-balancing system (with priority queue scheduling) using the DEVS formalism and with [Cadmium](https://github.com/SimulationEverywhere/cadmium_v2) library.
+The repository contains the code to model a load-balancing system (with priority queue scheduling) using the DEVS formalism and with [Cadmium](https://github.com/SimulationEverywhere/cadmium_v2) library.
 
 ### Build instruction
 To build the project, first clone the repository:

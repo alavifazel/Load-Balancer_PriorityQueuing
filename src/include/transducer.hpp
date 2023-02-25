@@ -87,7 +87,6 @@ namespace cadmium::loadbalancer {
 		void output(const TransducerState& s) const override {
 			switch(s.waitingForServersProcessing) {
 				case true:
-					outStop->addMessage(true);
 					std::cout << "End time: " << s.clock << std::endl;
 					std::cout << "Jobs generated: " << s.nJobsGenerated << std::endl;
 					std::cout << "Jobs processed: " << s.nJobsProcessed << std::endl;

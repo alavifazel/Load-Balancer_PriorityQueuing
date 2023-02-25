@@ -13,7 +13,7 @@ namespace cadmium::loadbalancer {
 	};
 
 	std::ostream& operator<<(std::ostream& out, const JobPair& j) {
-		out << "{" << j.job.id << "," << j.job.timeGenerated << "," << j.job.timeProcessed << ", P: " << j.priority << "}";
+		out << "{" << j.job.id << "," << j.job.timeGenerated << "," << j.job.timeProcessed << ", Priority: " << j.priority << "}";
 		return out;
 	}
 	std::istream& operator>> (std::istream& is, JobPair& jobPair) {

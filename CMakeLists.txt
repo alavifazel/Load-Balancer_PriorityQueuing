@@ -6,6 +6,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 add_library(cadmium INTERFACE)
 target_include_directories(cadmium INTERFACE include/ cadmium_v2/include/ json/include)
 
+execute_process(COMMAND git submodule update --init)
+
 FILE(GLOB Examples RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} src/main.cpp)
 foreach(exampleSrc ${Examples})
     get_filename_component(exampleName ${exampleSrc} NAME_WE)
@@ -23,3 +25,18 @@ foreach(testSrc ${Tests})
     target_include_directories(${testName} PUBLIC "src/include")
     target_link_libraries(${testName} cadmium)
 endforeach(testSrc)
+
+add_custom_target(run
+    COMMAND ./bin/main $(genPeriod) $(procTime) $(obsTime)
+    DEPENDS ./bin/main
+    WORKING_DIRECTORY ${CMAKE_PROJECT_DIR}
+)
+
+add_custom_target(run_test
+    COMMAND ./bin/test_generator input_data/generator_test_input.txt
+    COMMAND ./bin/test_server input_data/server_test_input.txt
+    COMMAND ./bin/test_transducer input_data/transducer_test_input_generator.txt input_data transducer_test_input_processed.txt > /dev/null
+    COMMAND ./bin/test_balancer input_data/balancer_test_input.txt
+    COMMAND echo "Done. Visit the log files."
+    WORKING_DIRECTORY ${CMAKE_PROJECT_DIR}
+)

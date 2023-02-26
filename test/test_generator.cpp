@@ -12,9 +12,9 @@ using namespace std;
 
 namespace cadmium::loadbalancer::iestream {
 	struct iestream_coupled : public Coupled {
-		iestream_coupled(const std::string& id, const char* filePath, double jobPeriod): Coupled(id) {
+		iestream_coupled(const std::string& id, const char* filePath, double genPeriod): Coupled(id) {
 			auto iestream1 = addComponent<lib::IEStream<bool>>("iestream", filePath);
-            auto generator = addComponent<Generator>("generator", jobPeriod);
+            auto generator = addComponent<Generator>("generator", genPeriod);
             addCoupling(iestream1->out, generator->inStop);
 		}
 	};
@@ -22,7 +22,7 @@ namespace cadmium::loadbalancer::iestream {
 
 int main(int argc, char *argv[]) {
 	std::ifstream file;
-    const double jobPeriod = 2;
+    const double genPeriod = 2;
 	if (argc < 2) { // Check that file is included
         std::cerr << "ERROR: not enough arguments" << std::endl;
         std::cerr << "    Usage:" << std::endl;
@@ -38,7 +38,7 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
-	auto model = std::make_shared<iestream::iestream_coupled>("IEStreamCoupled", filePath, jobPeriod);
+	auto model = std::make_shared<iestream::iestream_coupled>("IEStreamCoupled", filePath, genPeriod);
 	auto rootCoordinator = cadmium::RootCoordinator(model);
 	auto logger = std::make_shared<cadmium::CSVLogger>("generator_test.csv", ";");
 	rootCoordinator.setLogger(logger);

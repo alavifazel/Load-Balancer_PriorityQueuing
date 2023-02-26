@@ -12,11 +12,11 @@ namespace cadmium::loadbalancer {
     Port<double> throughput;
     Port<double> averageProcessingTime;
 	struct PriorityQueueLoadBalancing: public Coupled {
-		PriorityQueueLoadBalancing(const std::string& id, double jobPeriod, double processingTimeExpMean, double obsTime): Coupled(id) {
+		PriorityQueueLoadBalancing(const std::string& id, double genPeriod, double processingTimeExpMean, double obsTime): Coupled(id) {
             averageProcessingTime = addOutPort<double>("averageProcessingTime");	
             throughput = addOutPort<double>("throughput");	
             auto lbs = addComponent<LoadBalancerSystem>("LoadBalancerSystem", processingTimeExpMean);
-			auto generator = addComponent<Generator>("generator", jobPeriod);
+			auto generator = addComponent<Generator>("generator", genPeriod);
 			auto transducer = addComponent<Transducer>("transducer", obsTime, processingTimeExpMean);
 
 			addCoupling(generator->outGenerated, transducer->inGenerated);
@@ -39,15 +39,15 @@ int main(int argc, char *argv[]) {
         cerr << "> ./main <GENERATION_PERIOD> <PROCESSING_TIME_EXP_MEAN> <OBSERVATION_TIME>\n";
         return -1;
     }
-    double jobPeriod = stof(argv[1]);
+    double genPeriod = stof(argv[1]);
     double processingTimeExpMean = stof(argv[2]);
     double observationTime = stod(argv[3]);
-    if(jobPeriod < 0 or processingTimeExpMean < 0 or observationTime < 0) {
+    if(genPeriod < 0 or processingTimeExpMean < 0 or observationTime < 0) {
         cerr << "ERROR: Parameters cannot be negative.\n";
         return -1;
     }
 
-    auto model = make_shared<PriorityQueueLoadBalancing>("top", jobPeriod, processingTimeExpMean, observationTime);
+    auto model = make_shared<PriorityQueueLoadBalancing>("top", genPeriod, processingTimeExpMean, observationTime);
     auto rootCoordinator = cadmium::RootCoordinator(model);
     auto logger = make_shared<cadmium::CSVLogger>("log.csv", ";");
     rootCoordinator.setLogger(logger);

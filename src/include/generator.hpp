@@ -26,7 +26,7 @@ namespace cadmium::loadbalancer {
 
 	class Generator : public Atomic<GeneratorState> {
 	 private:
-		double jobPeriod;
+		double genPeriod;
 		size_t randInt(size_t a, size_t b) const {
 			static std::random_device dev;
 			static std::mt19937 rng(dev());
@@ -37,8 +37,8 @@ namespace cadmium::loadbalancer {
 		Port<bool> inStop;
 		Port<JobPair> outGenerated;
 
-		Generator(const std::string& id, double jobPeriod)
-			: Atomic<GeneratorState>(id, GeneratorState()), jobPeriod(jobPeriod)
+		Generator(const std::string& id, double genPeriod)
+			: Atomic<GeneratorState>(id, GeneratorState()), genPeriod(genPeriod)
 		{
 			inStop = addInPort<bool>("inStop");
 			outGenerated = addOutPort<JobPair>("outGenerated");
@@ -47,7 +47,7 @@ namespace cadmium::loadbalancer {
 		void internalTransition(GeneratorState& s) const override {
 			switch(s.phase) {
 				case Active:
-					s.sigma = jobPeriod;
+					s.sigma = genPeriod;
 					s.jobCount += 1;
 					s.clock += s.sigma;
 					break;

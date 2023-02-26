@@ -39,7 +39,7 @@ int main(int argc, char *argv[]) {
         cerr << "> ./main <GENERATION_PERIOD> <PROCESSING_TIME_EXP_MEAN> <OBSERVATION_TIME>\n";
         return -1;
     }
-    int jobPeriod = stoi(argv[1]);
+    double jobPeriod = stof(argv[1]);
     double processingTimeExpMean = stof(argv[2]);
     double observationTime = stod(argv[3]);
     if(jobPeriod < 0 or processingTimeExpMean < 0 or observationTime < 0) {

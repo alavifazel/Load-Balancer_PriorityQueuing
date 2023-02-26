@@ -63,6 +63,7 @@ namespace cadmium::loadbalancer {
 		void externalTransition(TransducerState& s, double e) const override {
 			s.sigma -= e;
 			s.clock += e;
+			std::cout << e << std::endl;
 			for (auto& job: inGenerated->getBag()) {
 				s.nJobsGenerated += 1;
 				std::cout << "Job " << job.job.id << " generated at t = " << s.clock << std::endl;

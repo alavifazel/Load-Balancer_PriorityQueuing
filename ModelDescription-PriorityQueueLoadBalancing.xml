@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Models>
-	<Model name="ProrityQueueLoadBalancing" type="coupled" description="A network consisting of a job generator, a load balancer with priority queuing scheduling and three servers.">
+	<Model name="TopLevelModel" type="coupled" description="A network consisting of a job generator, a load balancer with priority queuing scheduling and three servers">
 		<Outputs>
 			<Port name="thorughput" type="double" description="throughput of the whole system"/>
 			<Port name="averageProcessingTime" type="double" description="the average processing time for generated jobs"/>
@@ -9,7 +9,7 @@
 			<File name="main.cpp" type="cpp" location="/src"/>
 		</Files>
 	</Model>
-	<Model name="LoadBalancerSystem" type="coupled" description="The load-balancing system consisting of the main load balancer and the servers attached to it.">
+	<Model name="LoadBalancerSystem" type="coupled" description="The load-balancing system consisting of the main load balancer and the servers attached to it">
 		<Input>
 			<Port name="inJob" type="JobPair" description="a pair of job and its priority for execution"/>
 		</Input>
@@ -38,15 +38,15 @@
 			<Port name="inJob" type="JobPair" description="a pair of job and its priority for execution"/>
 		</Input>
 		<Outputs>
-			<Port name="outJob[0]" type="Job" description="a job to be executed by a server."/>
-			<Port name="outJob[1]" type="Job" description="a job to be executed by a server."/>
-			<Port name="outJob[2]" type="Job" description="a job to be executed by a server."/>
+			<Port name="outJob[0]" type="Job" description="a job to be executed by a server"/>
+			<Port name="outJob[1]" type="Job" description="a job to be executed by a server"/>
+			<Port name="outJob[2]" type="Job" description="a job to be executed by a server"/>
 		</Outputs>
 		<Files>
 			<File name="load_balancer.hpp" type="hpp" location="/src/include"/>
 		</Files>
 	</Model>
-	<Model name="Server" type="atomic" description="Representation of a generic server which processes jobs in exponential time distribution.">
+	<Model name="Server" type="atomic" description="Representation of a generic server which processes jobs in exponential time distribution">
 		<Input>
 			<Port name="inJob" type="Job" description="a job to be processed"/>
 		</Input>
@@ -67,7 +67,7 @@
 		<Outputs>
 			<Port name="throughput" type="double" description="the throughput of the system after observation time"/>
 			<Port name="averageProcessingTime" type="double" description="the average time takes for all the jobs to be processed"/>
-			<Port name="outStop" type="boolean" description="A boolean signal that stops the generator from further creating jobs."/>
+			<Port name="outStop" type="boolean" description="A boolean signal that stops the generator from further creating jobs"/>
 		</Outputs>
 		<Files>
 			<File name="transducer.hpp" type="hpp" location="/src/include"/>

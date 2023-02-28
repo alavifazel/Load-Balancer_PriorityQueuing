@@ -40,7 +40,7 @@ namespace cadmium::loadbalancer {
 		Port<JobPair> inJob;
 		std::array<Port<Job>, 3> outJob;
 
-		LoadBalancer(const std::string& id, double dispatchTime=0)
+		LoadBalancer(const std::string& id, double dispatchTime=0.1)
 		: Atomic<LoadBalancerState>(id, LoadBalancerState()), 
 		dispatchTime(dispatchTime)
 		{

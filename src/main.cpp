@@ -18,7 +18,6 @@ namespace cadmium::loadbalancer {
             auto lbs = addComponent<LoadBalancerSystem>("LoadBalancerSystem", processingTimeExpMean);
 			auto generator = addComponent<Generator>("generator", genPeriod);
 			auto transducer = addComponent<Transducer>("transducer", obsTime, processingTimeExpMean);
-
 			addCoupling(generator->outGenerated, transducer->inGenerated);
 			addCoupling(generator->outGenerated, lbs->inJob);
 			addCoupling(lbs->outProcessed[0], transducer->inProcessed[0]);

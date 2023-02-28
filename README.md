@@ -35,7 +35,7 @@ This example runs the simulation with job generation period of 2 time units, eac
 End time: 1046.06
 Jobs generated: 501
 Jobs processed: 501
-Average Residence Time: 5.0685
+Average Residence Time: 14.702
 Throughput: 0.478939
 ```
 

@@ -28,7 +28,7 @@ For instance:
 ./bin/main 2 5 1000
 ```
 
-This example runs the simulation with job generation period of 2 time units, each server having the processing time with mean value of 5, and for 1000 time units. Running this example produces:
+This example runs the simulation with job generation period of 2 time units, each server having the processing time with mean value of 5, and for the duration of 1000 time units. Running this example produces:
 
 ```
 ...
@@ -57,7 +57,7 @@ After compilation, the `bin` folder will contain four additional programs to tes
 After executing the programs, log files (CSV) will be generated which contain the details about the test runs.
 
 ### Simulation result
-The result for different job arrival period and a fixed mean processing time, 2, is shown below:
+The result for different job arrival periods with fixed mean processing time, 2, is shown below:
 
 | **Arrival period** | **Throughput** | **Residence time** |
 |:------------------:|----------------|--------------------|

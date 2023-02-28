@@ -16,7 +16,7 @@ namespace cadmium::loadbalancer::iestream {
 			auto iestreamGen = addComponent<lib::IEStream<JobPair>>("iestreamGen", filePathGen);
         	auto iestreamProc = addComponent<lib::IEStream<Job>>("iestreamProc", filePathProc);
         	auto iestream = addComponent<lib::IEStream<Job>>("iestream", filePathProc);            
-            auto transducer = addComponent<Transducer>("server", 10, 2);
+            auto transducer = addComponent<Transducer>("transducer", 10, 2);
             addCoupling(iestreamGen->out, transducer->inGenerated);
             addCoupling(iestreamProc->out, transducer->inProcessed[0]);
 		}

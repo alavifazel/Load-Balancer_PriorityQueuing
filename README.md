@@ -39,7 +39,6 @@ Average Processing Time: 5.0685
 Throughput: 0.478939
 ```
 
-
 ### Test programs
 After compilation, the `bin` folder will contain four additional programs to test each atomic model individually. These programs (with their corresponding input data) can be run with:
 

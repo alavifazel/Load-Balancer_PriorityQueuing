@@ -70,7 +70,7 @@ namespace cadmium::loadbalancer {
 			for (auto& job: inGenerated->getBag()) {
 				s.nJobsGenerated += 1;
 				std::cout << "Job " << job.job.id << " generated at t = " << s.clock << std::endl;
-				s.jobGenProc[job.job.id] = std::make_pair(s.clock, 0);
+				s.jobGenProc[job.job.id] = std::make_pair(s.clock, -1);
 			}
 			for (auto& job: inProcessed[0]->getBag()) {
 				s.nJobsProcessed += 1;

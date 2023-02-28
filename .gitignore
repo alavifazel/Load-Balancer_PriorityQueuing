@@ -1,6 +1,5 @@
 bin/
 /include/cadmium/*
-*.csv
 Makefile
 CMakeLists.txt.user
 CMakeCache.txt
